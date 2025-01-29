@@ -14,3 +14,5 @@ print("GPUs disponibles:", tf.config.list_physical_devices('GPU'))
 
 #verificar que LSTM esta instalado
 print(tf.keras.layers.LSTM())
+
+print("hello world")
