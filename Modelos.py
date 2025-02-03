@@ -20,23 +20,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error,mean_absolute_error
 
-def prophet_train():
-    df = parse_to_date_sales(pd.read_csv('./data/clean_data.csv'))
+def prophet_train(input_file: str,split_date: str) -> None:
+    df = parse_to_date_sales(pd.read_csv(input_file))
 
-    ax = df.plot(x='Date',y='Sales',
-        style='-',
-        figsize=(10, 5),
-        ms=1)
-    ax.legend()
-    ax.set_title("Dataframe Values")
-    plt.show()
+    dataframe_plot(df)
 
-    train_series,test_series = split_df('2011-11-08',df)
+    train_series,test_series = split_df(split_date,df)
 
     df_train_prophet = train_series.reset_index() \
         .rename(columns={'Date':'ds',
                         'Sales':'y'})
-    #print(df_train_prophet)
     prophet_model = Prophet()
     prophet_model.fit(df_train_prophet)
 
@@ -74,21 +67,50 @@ def prophet_train():
     ax.legend()
     plt.show()
 
-    print("Mean Squared Error: ")
-    print(np.sqrt(mean_squared_error(y_true=test_series['Sales'],
-                   y_pred=predicted_df['yhat'])))
+    calculate_mse_mae_mape(test_series['Sales'],predicted_df['yhat'])
+
+def arima_train(input_file: str,split_date :str) -> None:
+    df = parse_to_date_sales(pd.read_csv(input_file))
+    dataframe_plot(df)
+    train_series,test_series = split_df(split_date,df)
+    model = ARIMA(train_series['Sales'], order=(12, 1, 12)).fit()
+    predictions = model.get_forecast(steps=len(test_series)).predicted_mean
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(train_series['Date'], train_series['Sales'], label='Train Sales', color='blue')
+    plt.plot(test_series['Date'], test_series['Sales'], label='Test Sales', color='green')
+    plt.plot(test_series['Date'], predictions, label='Predicted Sales', color='red')
+    plt.title('ARIMA Model: Train, Test, and Predicted Sales')
+    plt.xlabel('Date')
+    plt.ylabel('Sales')
+    plt.legend()
+    plt.show()
+
+    calculate_mse_mae_mape(test_series['Sales'],predictions)
+
+def calculate_mse_mae_mape(expected_value,predictions) -> None:
     
-    print("\n")
-    print("Mean Absolute Error: ")
-    print(mean_absolute_error(y_true=test_series['Sales'],
-                   y_pred=predicted_df['yhat']))
-    print("\n")
+    mape = mean_absolute_percentage_error(expected_value, predictions)
+    mse = np.sqrt(mean_squared_error(y_true=expected_value,y_pred=predictions))
+    mae = mean_absolute_error(y_true=expected_value,y_pred=predictions)
 
-    print("Mean Absolute Percentage Error (Only relevant without RobustScaling): ")
-    print(mean_absolute_percentage_error(y_true=test_series['Sales'],
-                   y_pred=predicted_df['yhat']))
+    print("\n")
+    print(f"Mean Squared Error: {mse:.2f}")
+    
+    print(f"Mean Absolute Error: {mae:.2f}")
 
-def split_df(split_date,df):
+    print(f"Mean Absolute Percentage Error (Only relevant without RobustScaling): {mape:.2f}%")
+
+def dataframe_plot(df: pd.DataFrame) -> None:
+        ax = df.plot(x='Date',y='Sales',
+            style='-',
+            figsize=(10, 5),
+            ms=1)
+        ax.legend()
+        ax.set_title("Dataframe Values")
+        plt.show()
+
+def split_df(split_date,df) -> pd.DataFrame:
     split_date = pd.to_datetime(split_date)
     df['Date'] = pd.to_datetime(df['Date'])
 
@@ -110,11 +132,11 @@ def split_df(split_date,df):
     plt.show()
     return first_df,second_df
 
-def mean_absolute_percentage_error(y_true, y_pred):
+def mean_absolute_percentage_error(y_true, y_pred) -> float:
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
-def parse_to_date_sales(df: pd.DataFrame):
+def parse_to_date_sales(df: pd.DataFrame) -> pd.DataFrame:
     df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
     df['Date'] = df['InvoiceDate'].dt.date
     df = df.groupby('Date').apply(lambda x: (x['Quantity'] * x['UnitPrice']).sum()).reset_index(name='Sales').round(2)
@@ -125,4 +147,7 @@ def parse_to_date_sales(df: pd.DataFrame):
     return df
 
 #MAIN
-prophet_train()
+input_file = './data/clean_data.csv'
+split_date = '2011-11-08'
+prophet_train(input_file, split_date)
+arima_train(input_file, split_date)
