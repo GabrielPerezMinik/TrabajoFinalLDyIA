@@ -15,15 +15,15 @@ def print_results(df):
     negatives_values = df[(df['Quantity'] < 0) | (df['UnitPrice'] < 0)]
     print(f"\nTotal number of negatives: {negatives_values.__len__()} rows")
 
-def outliers_by_quartiles():
+def outliers_by_quartiles(df):
     for col in numeric_cols:
         Q1 = df[col].quantile(0.25)
         Q3 = df[col].quantile(0.75)
         IQR = Q3 - Q1
         lower_bound = Q1 - 1.5 * IQR
         upper_bound = Q3 + 1.5 * IQR
-        new_df = new_df[(new_df[col] >= lower_bound) & (new_df[col] <= upper_bound)]
-        return new_df
+        df = df[(df[col] >= lower_bound) & (df[col] <= upper_bound)]
+        return df
 
 def outliers_by_threshold(threshold,df):
     for col in numeric_cols:
