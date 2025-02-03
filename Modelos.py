@@ -1,6 +1,6 @@
 from statsmodels.tsa.arima.model import ARIMA
 from prophet import Prophet
-from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import PolynomialFeatures,RobustScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.ensemble import RandomForestRegressor
@@ -23,7 +23,6 @@ from sklearn.metrics import mean_squared_error,mean_absolute_error
 def prophet_train():
     df = parse_to_date_sales(pd.read_csv('./data/clean_data.csv'))
 
-    print(df.columns)
     ax = df.plot(x='Date',y='Sales',
         style='-',
         figsize=(10, 5),
@@ -37,7 +36,7 @@ def prophet_train():
     df_train_prophet = train_series.reset_index() \
         .rename(columns={'Date':'ds',
                         'Sales':'y'})
-    print(df_train_prophet)
+    #print(df_train_prophet)
     prophet_model = Prophet()
     prophet_model.fit(df_train_prophet)
 
@@ -47,7 +46,7 @@ def prophet_train():
 
     predicted_df = prophet_model.predict(df_test_prophet)
     
-    print(predicted_df)
+    #print(predicted_df)
     
     fig, ax = plt.subplots(figsize=(10, 5))
     prophet_model.plot(predicted_df, ax=ax)
@@ -85,7 +84,7 @@ def prophet_train():
                    y_pred=predicted_df['yhat']))
     print("\n")
 
-    print("Mean Absolute Percentage Error: ")
+    print("Mean Absolute Percentage Error (Only relevant without RobustScaling): ")
     print(mean_absolute_percentage_error(y_true=test_series['Sales'],
                    y_pred=predicted_df['yhat']))
 
@@ -102,8 +101,8 @@ def split_df(split_date,df):
 
 
     plt.figure(figsize=(10, 5))
-    plt.plot(first_df, label="Training Data")
-    plt.plot(second_df, label="Validation Data")
+    plt.plot(first_df['Date'],first_df['Sales'], label="Training Data")
+    plt.plot(second_df['Date'],second_df['Sales'], label="Validation Data")
     plt.xlabel("Date")
     plt.ylabel("Sales")
     plt.title("Data Distribution")
@@ -115,10 +114,14 @@ def mean_absolute_percentage_error(y_true, y_pred):
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
-def parse_to_date_sales(df):
+def parse_to_date_sales(df: pd.DataFrame):
     df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
     df['Date'] = df['InvoiceDate'].dt.date
     df = df.groupby('Date').apply(lambda x: (x['Quantity'] * x['UnitPrice']).sum()).reset_index(name='Sales').round(2)
+    
+    scaler = RobustScaler()
+
+    df['Sales'] = scaler.fit_transform(df[['Sales']])
     return df
 
 #MAIN
