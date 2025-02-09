@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.impute import SimpleImputer
 #import cupy as cp
 
-def print_results(df):
+def print_results(df) -> None:
     print("\nHeader:")
     print(df.head())
     print("\nDescribe:")
@@ -15,7 +15,7 @@ def print_results(df):
     negatives_values = df[(df['Quantity'] < 0) | (df['UnitPrice'] < 0)]
     print(f"\nTotal number of negatives: {negatives_values.__len__()} rows")
 
-def outliers_by_quartiles(df):
+def outliers_by_quartiles(df) -> pd.DataFrame:
     for col in numeric_cols:
         Q1 = df[col].quantile(0.25)
         Q3 = df[col].quantile(0.75)
@@ -25,7 +25,7 @@ def outliers_by_quartiles(df):
         df = df[(df[col] >= lower_bound) & (df[col] <= upper_bound)]
         return df
 
-def outliers_by_threshold(threshold,df):
+def outliers_by_threshold(threshold,df) -> pd.DataFrame:
     for col in numeric_cols:
         mean = df[col].mean()
         std = df[col].std()
