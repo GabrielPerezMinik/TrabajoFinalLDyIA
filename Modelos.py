@@ -19,6 +19,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error,mean_absolute_error
+from statsmodels.tsa.statespace.sarimax import SARIMAX
 
 def prophet_train(input_file: str,split_date: str) -> None:
     df = parse_to_date_sales(pd.read_csv(input_file))
@@ -88,6 +89,25 @@ def arima_train(input_file: str,split_date :str) -> None:
 
     calculate_mse_mae_mape(test_series['Sales'],predictions)
 
+def sarimax_train(input_file: str,split_date :str) -> None:
+    df = parse_to_date_sales(pd.read_csv(input_file))
+    dataframe_plot(df)
+    train_series,test_series = split_df(split_date,df)
+    model = SARIMAX(train_series['Sales'], order=(12, 1, 12)).fit()
+    predictions = model.get_forecast(steps=len(test_series)).predicted_mean
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(train_series['Date'], train_series['Sales'], label='Train Sales', color='blue')
+    plt.plot(test_series['Date'], test_series['Sales'], label='Test Sales', color='green')
+    plt.plot(test_series['Date'], predictions, label='Predicted Sales', color='red')
+    plt.title('SARIMAX Model: Train, Test, and Predicted Sales')
+    plt.xlabel('Date')
+    plt.ylabel('Sales')
+    plt.legend()
+    plt.show()
+
+    calculate_mse_mae_mape(test_series['Sales'],predictions)
+
 def calculate_mse_mae_mape(expected_value,predictions) -> None:
     
     mape = mean_absolute_percentage_error(expected_value, predictions)
@@ -146,8 +166,31 @@ def parse_to_date_sales(df: pd.DataFrame) -> pd.DataFrame:
     df['Sales'] = scaler.fit_transform(df[['Sales']])
     return df
 
+def print_menu() -> None:
+    print("1. Prophet")
+    print("2. Arima")
+    print("3. Sarimax")
+    print("4. Exit")
+
 #MAIN
 input_file = './data/clean_data.csv'
 split_date = '2011-11-08'
-prophet_train(input_file, split_date)
-arima_train(input_file, split_date)
+
+option = 0
+while(True):
+    print_menu()
+    option = int(input("User Input: "))
+    if(option == 1):
+        print("Now training Prophet...")
+        prophet_train(input_file, split_date)
+    elif (option == 2):
+        print("Now training Arima...")
+        arima_train(input_file, split_date)
+    elif (option == 3):
+        print("Now training Sarimax...")
+        sarimax_train(input_file, split_date)
+    elif (option == 4):
+        print("Exitting...")
+        break
+    else:
+        print("Unkown input \n")
