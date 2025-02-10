@@ -22,6 +22,14 @@ from sklearn.metrics import mean_squared_error,mean_absolute_error
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
 def prophet_train(input_file: str,split_date: str) -> None:
+    """
+        Trains Prophet model with given dataframe
+
+        Parameters
+        ----------
+            input_file (str): full dataframe
+            split_date (str): date use to split dataframe into training and validation
+    """
     df = parse_to_date_sales(pd.read_csv(input_file))
 
     dataframe_plot(df)
@@ -39,8 +47,6 @@ def prophet_train(input_file: str,split_date: str) -> None:
                         'Sales':'y'})
 
     predicted_df = prophet_model.predict(df_test_prophet)
-    
-    #print(predicted_df)
     
     fig, ax = plt.subplots(figsize=(10, 5))
     prophet_model.plot(predicted_df, ax=ax)
@@ -71,6 +77,14 @@ def prophet_train(input_file: str,split_date: str) -> None:
     calculate_mse_mae_mape(test_series['Sales'],predicted_df['yhat'])
 
 def arima_train(input_file: str,split_date :str) -> None:
+    """
+        Trains Arima model with given dataframe
+
+        Parameters
+        ----------
+            input_file (str): full dataframe
+            split_date (str): date use to split dataframe into training and validation
+    """
     df = parse_to_date_sales(pd.read_csv(input_file))
     dataframe_plot(df)
     train_series,test_series = split_df(split_date,df)
@@ -90,6 +104,14 @@ def arima_train(input_file: str,split_date :str) -> None:
     calculate_mse_mae_mape(test_series['Sales'],predictions)
 
 def sarimax_train(input_file: str,split_date :str) -> None:
+    """
+        Trains Sarimax model with given dataframe
+
+        Parameters
+        ----------
+            input_file (str): full dataframe
+            split_date (str): date use to split dataframe into training and validation
+    """
     df = parse_to_date_sales(pd.read_csv(input_file))
     dataframe_plot(df)
     train_series,test_series = split_df(split_date,df)
@@ -109,7 +131,14 @@ def sarimax_train(input_file: str,split_date :str) -> None:
     calculate_mse_mae_mape(test_series['Sales'],predictions)
 
 def calculate_mse_mae_mape(expected_value,predictions) -> None:
-    
+    """
+        Displays mse mae and mape
+
+        Parameters
+        ----------
+            expected_value (any arraylike): Real value from the dataframe
+            predictions (any arraylike): Predicted value from the model
+    """
     mape = mean_absolute_percentage_error(expected_value, predictions)
     mse = np.sqrt(mean_squared_error(y_true=expected_value,y_pred=predictions))
     mae = mean_absolute_error(y_true=expected_value,y_pred=predictions)
@@ -122,6 +151,13 @@ def calculate_mse_mae_mape(expected_value,predictions) -> None:
     print(f"Mean Absolute Percentage Error (Only relevant without RobustScaling): {mape:.2f}%")
 
 def dataframe_plot(df: pd.DataFrame) -> None:
+        """
+        Displays dataframe info
+
+        Parameters
+        ----------
+            df (pd.dataframe): dataframe to display
+        """
         ax = df.plot(x='Date',y='Sales',
             style='-',
             figsize=(10, 5),
@@ -130,7 +166,19 @@ def dataframe_plot(df: pd.DataFrame) -> None:
         ax.set_title("Dataframe Values")
         plt.show()
 
-def split_df(split_date,df) -> pd.DataFrame:
+def split_df(split_date: str,df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Splits dataframe by given date
+
+    Parameters
+    ----------
+        split_date (str): date to split, format: yyy-mm-dd
+        df (pd.dataframe): dataframe to split
+
+    Returns:
+        pd.Dataframe: dataframe up to the split date
+        pd.Dataframe: dataframe from the split date to end
+    """
     split_date = pd.to_datetime(split_date)
     df['Date'] = pd.to_datetime(df['Date'])
 
@@ -152,9 +200,21 @@ def split_df(split_date,df) -> pd.DataFrame:
     plt.show()
     return first_df,second_df
 
-def mean_absolute_percentage_error(y_true, y_pred) -> float:
-    y_true, y_pred = np.array(y_true), np.array(y_pred)
-    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+def mean_absolute_percentage_error(expected, predicted) -> float:
+    """
+    calculates mape
+
+    Parameters
+    ----------
+        Both values must be the same type
+        expected (array-like): Real value from the dataframe
+        predicted (array-like): Predicted value from the model
+
+    Returns:
+        error percentage (float): error percentage
+    """
+    expected, predicted = np.array(expected), np.array(predicted)
+    return np.mean(np.abs((expected - predicted) / expected)) * 100
 
 def parse_to_date_sales(df: pd.DataFrame) -> pd.DataFrame:
     df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
@@ -167,6 +227,9 @@ def parse_to_date_sales(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def print_menu() -> None:
+    """
+    Shows the main menu
+    """
     print("1. Prophet")
     print("2. Arima")
     print("3. Sarimax")

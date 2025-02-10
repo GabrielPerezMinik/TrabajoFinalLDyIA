@@ -6,6 +6,13 @@ from sklearn.impute import SimpleImputer
 #import cupy as cp
 
 def print_results(df) -> None:
+    """
+    Prints basic info on given Dataframe
+
+    Parameters
+    ----------
+        df (pd.Dataframe): Dataframe for printing
+    """
     print("\nHeader:")
     print(df.head())
     print("\nDescribe:")
@@ -16,6 +23,16 @@ def print_results(df) -> None:
     print(f"\nTotal number of negatives: {negatives_values.__len__()} rows")
 
 def outliers_by_quartiles(df) -> pd.DataFrame:
+    """
+    Calculate Outliers on given dataframe by quartiles
+
+    Parameters
+    ----------
+        df (pd.Dataframe): Dataframe to clean.
+
+    Returns:
+        dataframe (pd.Dataframe): Dataframe without outliers.
+    """
     for col in numeric_cols:
         Q1 = df[col].quantile(0.25)
         Q3 = df[col].quantile(0.75)
@@ -26,6 +43,16 @@ def outliers_by_quartiles(df) -> pd.DataFrame:
         return df
 
 def outliers_by_threshold(threshold,df) -> pd.DataFrame:
+    """
+    Calculate Outliers on given dataframe by given threshold
+
+    Parameters
+    ----------
+        threshold (int): threshold to determinate outliers
+        df (pd.Dataframe): Dataframe to clean.
+    Returns:
+         dataframe (pd.Dataframe): Dataframe without outliers.
+    """
     for col in numeric_cols:
         mean = df[col].mean()
         std = df[col].std()
