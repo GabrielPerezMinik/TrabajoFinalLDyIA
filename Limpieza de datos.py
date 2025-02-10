@@ -64,17 +64,17 @@ def outliers_by_threshold(threshold,df) -> pd.DataFrame:
         return df
 
 
-input_file = "./data/data.csv"
-output_file = "./data/clean_data.csv"
-numeric_cols = ['Quantity', 'UnitPrice']
+input_file = "./data/data.csv" # file to parse
+output_file = "./data/clean_data.csv" # path to save parsed file
+numeric_cols = ['Quantity', 'UnitPrice'] # Name of numeric columns in file to calculate outliers
 
-df = pd.read_csv(input_file, encoding="latin1") #Change encoding for working purposes
+df = pd.read_csv(input_file, encoding="latin1") # Read file. Change encoding for working purposes
 new_df = df
 
-new_df = new_df[(new_df['Quantity'] >= 0) & (new_df['UnitPrice'] >= 0)]
+new_df = new_df[(new_df['Quantity'] >= 0) & (new_df['UnitPrice'] >= 0)] # Parse null values
 print_results(df)
 
 new_df = outliers_by_threshold(20,new_df)
 
 print_results(new_df)
-new_df.to_csv(output_file, index=False)
+new_df.to_csv(output_file, index=False) # Save parsed file

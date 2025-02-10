@@ -236,8 +236,8 @@ def print_menu() -> None:
     print("4. Exit")
 
 #MAIN
-input_file = './data/clean_data.csv'
-split_date = '2011-11-08'
+input_file = './data/clean_data.csv' # File for training
+split_date = '2011-11-08' # Date for splitting file
 
 option = 0
 while(True):
