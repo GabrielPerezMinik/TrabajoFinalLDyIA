@@ -176,8 +176,8 @@ def split_df(split_date: str,df: pd.DataFrame) -> pd.DataFrame:
         df (pd.dataframe): dataframe to split
 
     Returns:
-        pd.Dataframe: dataframe up to the split date
-        pd.Dataframe: dataframe from the split date to end
+        dataframe (pd.Dataframe): dataframe up to the split date
+        dataframe (pd.Dataframe): dataframe from the split date to end
     """
     split_date = pd.to_datetime(split_date)
     df['Date'] = pd.to_datetime(df['Date'])
