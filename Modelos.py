@@ -74,7 +74,7 @@ def prophet_train(input_file: str,split_date: str) -> None:
     ax.legend()
     plt.show()
 
-    calculate_mse_mae_mape(test_series['Sales'],predicted_df['yhat'])
+    calculate_mse_mae_mape("Prophet",test_series['Sales'],predicted_df['yhat'])
 
 def arima_train(input_file: str,split_date :str) -> None:
     """
@@ -101,7 +101,7 @@ def arima_train(input_file: str,split_date :str) -> None:
     plt.legend()
     plt.show()
 
-    calculate_mse_mae_mape(test_series['Sales'],predictions)
+    calculate_mse_mae_mape("Arima",test_series['Sales'],predictions)
 
 def sarimax_train(input_file: str,split_date :str) -> None:
     """
@@ -128,14 +128,15 @@ def sarimax_train(input_file: str,split_date :str) -> None:
     plt.legend()
     plt.show()
 
-    calculate_mse_mae_mape(test_series['Sales'],predictions)
+    calculate_mse_mae_mape("Sarimax",test_series['Sales'],predictions)
 
-def calculate_mse_mae_mape(expected_value,predictions) -> None:
+def calculate_mse_mae_mape(model_name: str,expected_value,predictions) -> None:
     """
         Displays mse mae and mape
 
         Parameters
         ----------
+            model_name (str): Model trained
             expected_value (any arraylike): Real value from the dataframe
             predictions (any arraylike): Predicted value from the model
     """
@@ -144,6 +145,8 @@ def calculate_mse_mae_mape(expected_value,predictions) -> None:
     mae = mean_absolute_error(y_true=expected_value,y_pred=predictions)
 
     print("\n")
+    print(f"Modelo entrenado: {model_name}")
+
     print(f"Mean Squared Error: {mse:.2f}")
     
     print(f"Mean Absolute Error: {mae:.2f}")
@@ -206,7 +209,6 @@ def mean_absolute_percentage_error(expected, predicted) -> float:
 
     Parameters
     ----------
-        Both values must be the same type
         expected (array-like): Real value from the dataframe
         predicted (array-like): Predicted value from the model
 
