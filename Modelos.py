@@ -1,3 +1,7 @@
+from statsmodels.tsa.arima.model import ARIMA
+from prophet import Prophet
+from xgboost import XGBRegressor
+import tensorflow as tf
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,14 +13,15 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import OneHotEncoder
-import tensorflow as tf
 from datetime import datetime
 from sklearn.pipeline import make_pipeline
 import re
 
-# Función para cargar los datos
-def load_data(file_path):
+# Función para cargar los datos limpiados
+def load_cleaned_data(file_path):
+    """Carga el archivo CSV con los datos limpiados."""
     return pd.read_csv(file_path, encoding="latin1")
+
 
 # Función para limpiar los datos
 def clean_data(df):
@@ -29,13 +34,15 @@ def clean_data(df):
     # Eliminar valores negativos de Quantity y UnitPrice
     df = df[(df["Quantity"] >= 0) & (df["UnitPrice"] >= 0)]
 
-    # Eliminar valores de descripción no útiles
+    # Eliminar descripciones no útiles
     useless_descriptions = re.compile(r"(Manual|DOTCOM POSTAGE|AMAZON FEE|POSTAGE|Adjust bad debt)", re.IGNORECASE)
     df = df[~df["Description"].str.contains(useless_descriptions, na=False)]
 
     return df
 
-# Función para procesar las columnas necesarias
+
+
+# Function to process the necessary columns
 def process_columns(df):
     df_daily = df.groupby('InvoiceDate').agg(
         Daily_sales=('Quantity', lambda x: x[x > 0].sum()),
@@ -47,11 +54,11 @@ def process_columns(df):
         Weekday=('InvoiceDate', lambda x: x.iloc[0].dayofweek)
     )
 
-    # Ajustar el total de transacciones
+   # Adjust total transactions
     df_daily['Transactions_per_day'] = df_daily['Daily_sales'] + df_daily['Daily_returns']
     return df_daily
 
-# Función para dividir los datos en entrenamiento, validación y prueba
+# Function to split data into training, validation and testing
 def split_data(df_daily):
     data_train_val = df_daily[(df_daily.index >= datetime(2010, 12, 1)) & (df_daily.index <= datetime(2011, 11, 8))]
     df_daily_train, df_daily_val = train_test_split(data_train_val, test_size=0.2, random_state=42)
@@ -60,7 +67,7 @@ def split_data(df_daily):
     
     return df_daily_train, df_daily_val, df_daily_test
 
-# Función para normalizar los datos
+# Function to normalize data
 def normalize_data(df_daily_train, df_daily_val, df_daily_test, cols_to_scale):
     robust_scaler = RobustScaler()
     robust_scaler.fit(df_daily_train[cols_to_scale])
@@ -75,7 +82,7 @@ def normalize_data(df_daily_train, df_daily_val, df_daily_test, cols_to_scale):
     
     return df_daily_train_robust, df_daily_val_robust, df_daily_test_robust
 
-# Función para entrenar y evaluar los modelos
+# Function to train and evaluate the models
 def train_and_evaluate_models(df_daily_train_robust, df_daily_val_robust, df_daily_test_robust):
     results = []
 
@@ -151,7 +158,7 @@ def train_and_evaluate_models(df_daily_train_robust, df_daily_val_robust, df_dai
 
     return results
 
-# Función para evaluar el modelo
+# Function to evaluate the model
 def evaluate_model(model, train_val_data, test_data):
     X_train_val = train_val_data[['Daily_sales', 'Daily_returns', 'Transactions_per_day', 'Daily_income', 'Daily_credits', 'Weekday']]
     y_train_val = train_val_data['Daily_profit']
@@ -162,15 +169,15 @@ def evaluate_model(model, train_val_data, test_data):
     rmse = mean_squared_error(y_test, predictions)
     return rmse
 
-# Función para crear los gráficos de comparación
+# Function to create the comparison graphs
 def create_comparison_graphs(best_model, best_poly_model, test_data):
     predictions_rf = best_model.predict(test_data[['Daily_sales', 'Daily_returns', 'Transactions_per_day', 'Daily_income', 'Daily_credits', 'Weekday']])
     predictions_poly = best_poly_model.predict(test_data[['Daily_sales', 'Daily_returns', 'Transactions_per_day', 'Daily_income', 'Daily_credits', 'Weekday']])
 
-    # Obtener los valores reales del conjunto de prueba
+    # Get the actual values ​​of the test set
     y_test = test_data['Daily_profit']
 
-    # Gráfico de dispersión comparando las predicciones con los valores reales
+    # Scatter plot comparing predictions to actual values
     plt.figure(figsize=(12, 6))
     plt.scatter(y_test, predictions_rf, alpha=0.6, label='Random Forest', color='blue')
     plt.scatter(y_test, predictions_poly, alpha=0.6, label='Polynomial Regression', color='green')
@@ -182,11 +189,11 @@ def create_comparison_graphs(best_model, best_poly_model, test_data):
     plt.tight_layout()
     plt.show()
 
-    # Calcular los errores
+    # Calculate the errors
     errors_rf = predictions_rf - y_test
     errors_poly = predictions_poly - y_test
 
-    # Gráfico de dispersión de los errores
+    # Scatter plot of errors
     plt.figure(figsize=(12, 6))
     plt.scatter(y_test, errors_rf, alpha=0.6, label='Errors Random Forest', color='blue')
     plt.scatter(y_test, errors_poly, alpha=0.6, label='Errors Polynomial Regression', color='green')
@@ -197,11 +204,11 @@ def create_comparison_graphs(best_model, best_poly_model, test_data):
     plt.tight_layout()
     plt.show()
 
-    # Calcular el error medio absoluto (MAE) para cada modelo
+    # Calculate the mean absolute error (MAE) for each model
     mae_rf = abs(errors_rf).mean()
     mae_poly = abs(errors_poly).mean()
 
-    # Gráfico de barras comparando el error medio
+    # Bar chart comparing the mean error
     plt.figure(figsize=(8, 6))
     plt.bar(['Random Forest', 'Polynomial Regression'], [mae_rf, mae_poly], color=['blue', 'green'])
     plt.title('Comparison of Mean Error by Model', fontsize=16)
@@ -210,39 +217,40 @@ def create_comparison_graphs(best_model, best_poly_model, test_data):
     plt.tight_layout()
     plt.show()
 
-# Función para mostrar los resultados
+# Function to display the results
 def print_results(results):
     for result in results:
         print(f"Results with {result['model']}:")
         print(f" RMSE on test set: {result['rmse_test']}")
         print(f" Best parameters: {result['best_parameters']}")
 
-# Función principal para ejecutar el flujo completo
+# Main function to execute the entire flow
 def main():
     file_path = './data.csv'
     
-    # Cargar datos
-    df = load_data(file_path)
+    # Load data
+    df = load_cleaned_data(file_path)
     
-    # Limpiar datos
+    # Clear data
     df = clean_data(df)
     
-    # Procesar columnas
+    # Process columns
     df_daily = process_columns(df)
     
-    # Dividir datos
+    # Split data
     df_daily_train, df_daily_val, df_daily_test = split_data(df_daily)
     
-    # Normalizar datos
+    # Normalize data
     cols_to_scale = ['Daily_sales', 'Daily_returns', 'Transactions_per_day', 'Daily_income', 'Daily_credits', 'Daily_profit', 'Weekday']
     df_daily_train_robust, df_daily_val_robust, df_daily_test_robust = normalize_data(df_daily_train, df_daily_val, df_daily_test, cols_to_scale)
     
-    # Entrenar y evaluar modelos
+    # Train and evaluate models
     results = train_and_evaluate_models(df_daily_train_robust, df_daily_val_robust, df_daily_test_robust)
     
-    # Mostrar resultados
+    # Show results
     print_results(results)
 
-# Ejecutar el flujo principal
+
+# Run the main flow
 if __name__ == "__main__":
     main()

@@ -4,12 +4,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.impute import SimpleImputer
 import re
+#import cupy as cp
 
-
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import re
 
 def load_data(file_path):
     """Loads dataset from a CSV file."""
@@ -149,3 +145,24 @@ print(f"The number of unique 'CustomerID' values: {unique_values_count}")
 
 # Plot country distribution
 plot_country_distribution(df)
+
+# Funciones de limpieza como las que mencionaste antes
+
+def save_cleaned_data(df, output_path):
+    """Guarda el DataFrame limpio en un archivo CSV."""
+    df.to_csv(output_path, index=False, encoding="latin1")
+    print(f"Datos limpiados guardados en {output_path}")
+
+# Función principal de limpieza de datos
+def clean_and_save_data(file_path):
+    df = load_data(file_path)  # Cargar los datos originales
+    df_cleaned = handle_null_values(df)  # Limpiar los datos
+    df_cleaned = handle_negative_values(df_cleaned)
+    df_cleaned = filter_useless_descriptions(df_cleaned)
+    df_cleaned = handle_zero_unit_price_and_null_customer_id(df_cleaned)
+    
+    # Guardar los datos limpios
+    save_cleaned_data(df_cleaned, './data_limpios.csv')
+
+# Llamada a la función para limpiar y guardar los datos
+clean_and_save_data('./data.csv')
