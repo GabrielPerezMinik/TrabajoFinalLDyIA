@@ -17,24 +17,24 @@ from datetime import datetime
 from sklearn.pipeline import make_pipeline
 import re
 
-# Función para cargar los datos limpiados
+# Function to load the cleaned data
 def load_cleaned_data(file_path):
-    """Carga el archivo CSV con los datos limpiados."""
+    """Load the CSV file with the cleaned data."""
     return pd.read_csv(file_path, encoding="latin1")
 
 
-# Función para limpiar los datos
+# Function to clean the data
 def clean_data(df):
     df['TotalPrice'] = df['Quantity'] * df['UnitPrice']
     df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
     
-    # Eliminar descripciones nulas
+    # Remove null descriptions
     df = df.dropna(subset=["Description"])
 
-    # Eliminar valores negativos de Quantity y UnitPrice
+    # Remove negative values ​​from Quantity and UnitPrice
     df = df[(df["Quantity"] >= 0) & (df["UnitPrice"] >= 0)]
 
-    # Eliminar descripciones no útiles
+    # Remove unhelpful descriptions
     useless_descriptions = re.compile(r"(Manual|DOTCOM POSTAGE|AMAZON FEE|POSTAGE|Adjust bad debt)", re.IGNORECASE)
     df = df[~df["Description"].str.contains(useless_descriptions, na=False)]
 
@@ -140,7 +140,7 @@ def train_and_evaluate_models(df_daily_train_robust, df_daily_val_robust, df_dai
 
         best_poly_model = grid_search_poly.best_estimator_
 
-        # Guardar los resultados
+        # Save the results
         results.append({
             'model': 'Random Forest',
             'rmse_test': evaluate_model(best_model, pd.concat([train_data, val_data]), test_data),
@@ -153,7 +153,7 @@ def train_and_evaluate_models(df_daily_train_robust, df_daily_val_robust, df_dai
             'best_parameters': grid_search_poly.best_params_,
         })
 
-        # Crear gráficos de comparación
+        # Create comparison charts
         create_comparison_graphs(best_model, best_poly_model, test_data)
 
     return results
@@ -226,7 +226,7 @@ def print_results(results):
 
 # Main function to execute the entire flow
 def main():
-    file_path = './data.csv'
+    file_path = 'data/clean_data.csv'
     
     # Load data
     df = load_cleaned_data(file_path)
@@ -250,7 +250,7 @@ def main():
     # Show results
     print_results(results)
 
-
 # Run the main flow
 if __name__ == "__main__":
     main()
+

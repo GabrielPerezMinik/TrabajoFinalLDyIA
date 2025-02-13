@@ -18,12 +18,14 @@ def display_head_and_info(df):
     df.describe()
 
 def group_and_find_duplicates(df):
-    """Finds and returns duplicate rows based on InvoiceNo and Description."""
+    """Finds and removes duplicate rows based on InvoiceNo and Description."""
     groups = df.groupby(['InvoiceNo', 'Description'])
     count_groups = groups.size()
     actual_duplicates = count_groups[count_groups > 1].reset_index()
     duplicate_rows = pd.merge(actual_duplicates, df, on=['InvoiceNo', 'Description'], how='left')
-    return duplicate_rows
+    print(f"Found {len(duplicate_rows)} duplicates.")
+    df = df.drop_duplicates(subset=['InvoiceNo', 'Description'])
+    return df
 
 def handle_null_values(df):
     """Handles null values in the dataset."""
@@ -60,6 +62,18 @@ def plot_boxplot(df, column, title, ylabel):
     sns.boxplot(y=df[column])
     plt.title(title)
     plt.ylabel(ylabel)
+    plt.show()
+
+def plot_country_distribution(df):
+    """Plots bar chart for the top countries based on purchases."""
+    country_counts = df["Country"].value_counts().head(10)
+    plt.figure(figsize=(10, 6))
+    sns.barplot(x=country_counts.index, y=country_counts.values, palette='viridis')
+    plt.title("Top 10 Countries by Purchases")
+    plt.xlabel("Country")
+    plt.ylabel("Number of Purchases")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
     plt.show()
 
 def filter_useless_descriptions(df):
@@ -122,7 +136,7 @@ def plot_country_distribution(df):
     plt.show()
 
 # Main execution
-file_path = "./data.csv"
+file_path = 'data/data.csv'
 df = load_data(file_path)
 
 display_head_and_info(df)
@@ -132,6 +146,7 @@ df = handle_negative_values(df)
 
 # Boxplots
 plot_boxplot(df, 'UnitPrice', 'UnitPrice Box Plot', 'UnitPrice')
+plot_boxplot(df, 'Quantity', 'Quantity Box Plot', 'Quantity')
 
 # Handle outliers and remove outliers in UnitPrice and Quantity
 df = filter_useless_descriptions(df)
@@ -146,23 +161,22 @@ print(f"The number of unique 'CustomerID' values: {unique_values_count}")
 # Plot country distribution
 plot_country_distribution(df)
 
-# Funciones de limpieza como las que mencionaste antes
-
+# Cleaning functions
 def save_cleaned_data(df, output_path):
-    """Guarda el DataFrame limpio en un archivo CSV."""
+    """Save the cleaned DataFrame to a CSV file."""
     df.to_csv(output_path, index=False, encoding="latin1")
-    print(f"Datos limpiados guardados en {output_path}")
+    print(f"Cleaned data saved in {output_path}")
 
-# Función principal de limpieza de datos
+# Main data cleaning function
 def clean_and_save_data(file_path):
-    df = load_data(file_path)  # Cargar los datos originales
-    df_cleaned = handle_null_values(df)  # Limpiar los datos
+    df = load_data(file_path)  # Load the original data
+    df_cleaned = handle_null_values(df)  # Clear data
     df_cleaned = handle_negative_values(df_cleaned)
     df_cleaned = filter_useless_descriptions(df_cleaned)
     df_cleaned = handle_zero_unit_price_and_null_customer_id(df_cleaned)
     
-    # Guardar los datos limpios
-    save_cleaned_data(df_cleaned, './data_limpios.csv')
+    # Save clean data
+    save_cleaned_data(df_cleaned, 'data/clean_data.csv')
 
-# Llamada a la función para limpiar y guardar los datos
-clean_and_save_data('./data.csv')
+# Call the function to clean and save the data
+clean_and_save_data('data/data.csv')
