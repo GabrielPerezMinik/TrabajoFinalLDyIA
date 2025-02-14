@@ -241,8 +241,6 @@ def print_menu() -> None:
 input_file = './data/clean_data.csv' # File for training
 split_date = '2011-11-08' # Date for splitting file
 
-option = 0
-
 while(True):
     print_menu()
     match int(input("User Input: ")):
