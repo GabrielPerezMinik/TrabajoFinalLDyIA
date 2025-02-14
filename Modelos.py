@@ -242,20 +242,21 @@ input_file = './data/clean_data.csv' # File for training
 split_date = '2011-11-08' # Date for splitting file
 
 option = 0
+
 while(True):
     print_menu()
-    option = int(input("User Input: "))
-    if(option == 1):
-        print("Now training Prophet...")
-        prophet_train(input_file, split_date)
-    elif (option == 2):
-        print("Now training Arima...")
-        arima_train(input_file, split_date)
-    elif (option == 3):
-        print("Now training Sarimax...")
-        sarimax_train(input_file, split_date)
-    elif (option == 4):
-        print("Exitting...")
-        break
-    else:
-        print("Unkown input \n")
+    match int(input("User Input: ")):
+        case 1:
+            print("Now training Prophet...")
+            prophet_train(input_file, split_date)
+        case 2:
+            print("Now training Arima...")
+            arima_train(input_file, split_date)
+        case 3:
+            print("Now training Sarimax...")
+            sarimax_train(input_file, split_date)
+        case 4:
+            print("Exitting...")
+            break
+        case _:
+            print("Unkown input \n")
