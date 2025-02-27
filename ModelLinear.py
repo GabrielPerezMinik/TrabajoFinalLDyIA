@@ -140,7 +140,7 @@ plt.show()
 
 # Suponiendo que test_df es el DataFrame de test original y que al crear secuencias
 # se perdieron las primeras 'seq_length' fechas, usaremos:
-dates = test_df.index[seq_length:]  # Ajusta esto si fuera necesario
+dates = test_df.index[seq_length:]
 
 # Verifica que la longitud de 'dates' coincida con la de los arrays de error
 if len(dates) != len(ape):
