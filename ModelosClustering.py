@@ -58,37 +58,6 @@ def kmeans_cluster_by_encoding(df: pd.DataFrame, k: int, additional_info: bool) 
 
     scatter_plot(df)
 
-def kmeans_cluster_by_rfm(df: pd.DataFrame, k: int) -> None:
-
-    # Casting and converting datatypes
-    df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"])
-    reference_date = df["InvoiceDate"].max()
-    df.dropna(subset=["CustomerID"], inplace=True)
-    df["CustomerID"] = df["CustomerID"].astype(int)
-
-    df["TotalPrice"] = df["Quantity"] * df["UnitPrice"]
-    rfm = df.groupby("CustomerID").agg({
-        "InvoiceDate": lambda x: (reference_date - x.max()).days,  # Recency (days since last purchase)
-        "InvoiceNo": "nunique",  # Frequency
-        "TotalPrice": "sum"  # Monetary
-    })
-
-    rfm.columns = ["Recency", "Frequency", "Monetary"] # Rename columns
-
-    # Normalize the RFM values
-    scaler = StandardScaler()
-    rfm_scaled = scaler.fit_transform(rfm)
-
-    # Display first few rows
-    pd.DataFrame(rfm_scaled, columns=["Recency", "Frequency", "Monetary"]).head()
-
-    kmeans = KMeans(n_clusters=k, random_state=42, n_init=10) # Train K-means
-    rfm["Cluster"] = kmeans.fit_predict(rfm_scaled)
-
-    rfm = rfm.reset_index()
-
-    scatter_plot(rfm)
-
 def scatter_plot(df: pd.DataFrame) -> None:
     """
     Method used to display Kmeans clusters in scatter graphic
@@ -109,8 +78,7 @@ def print_menu() -> None:
     Shows the main menu
     """
     print("1. Train K-means by encoding")
-    print("2. Train K-means by RFM")
-    print("3. Exit")
+    print("2. Exit")
 
 input_file = './data/clean_data.csv'
 df = pd.read_csv(input_file, encoding='iso-8859-1')
@@ -125,10 +93,6 @@ while(True):
             print("Now training Kmeans encoding...")
             kmeans_cluster_by_encoding(df,k,boolean)
         case 2:
-            k=int(input("Specify of clusters: "))
-            print("Now training Kmeans RFM...")
-            kmeans_cluster_by_rfm(df,k)
-        case 3:
             print("Exitting...")
             break
         case _:
