@@ -7,12 +7,10 @@ Original file is located at
     https://colab.research.google.com/drive/11Eh9iA4R4A-oxj8nZytXS5_-FQiYrL6s
 
 The model we will use is a Gaussian Mixture Model. It seems like a good model since it allows for more complex cluster shapes than k-means, which assumes they are spherical, and its probabilistic approach allows for more flexible segmentations.
-
-First, we need to import the necessary libraries for GMM in Python. These are sklearn.mixture for the GMM model, pandas for data manipulation, and matplotlib.pyplot for visualization
 """
 
 import pandas as pd
-from sklearn.mixture import GaussianMixture
+from sklearn.mixture import GaussianMixture #GMM model
 import matplotlib.pyplot as plt  # For visualization
 from sklearn.preprocessing import StandardScaler # For standardizing the variables
 
@@ -20,11 +18,13 @@ import matplotlib.pyplot as plt # For visualization with PCA
 import matplotlib.colors
 from sklearn.decomposition import PCA
 
-"""Then we load the dataset using pandas. It would need to be cleaned, but it already comes with the data cleaning done in the previous exercise, so it is not necessary to carry it out."""
-
-df = pd.read_csv('clean_data.csv')
-
-df.head()
+def load_and_preprocess_data(file_path):
+  # Loads the data, selects relevant columns, and scales them. As it was already cleaned, it is not necessary to carry it out.
+  df = pd.read_csv(file_path)
+  X = df[['Quantity', 'UnitPrice']]
+  scaler = StandardScaler()
+  X_scaled = scaler.fit_transform(X)
+  return df, X_scaled
 
 """We choose the columns to study.
 
@@ -51,68 +51,109 @@ For all this we are going to choose to study Quantity and UnitPrice.
 We are also going to scale the variables with StandardScaler to avoid that the variables with a larger range dominate the clustering.
 """
 
-# Select the columns
-X = df[['Quantity', 'UnitPrice']]
-
-# Scale the variables
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-
-# Apply GMM to the scaled data
-gmm = GaussianMixture(n_components=3, random_state=0)
-gmm.fit(X_scaled)
+def apply_gmm(X_scaled, n_components=3, random_state=0):
+  # Applies Gaussian Mixture Model to the scaled data.
+  gmm = GaussianMixture(n_components=n_components, random_state=random_state)
+  gmm.fit(X_scaled)
+  return gmm
 
 """When building the model, we tested with 3 and 4 clusters. Separating into 4 clusters created a significantly smaller cluster than the rest, consisting of individual sales with a mean Quantity of exactly 1 and a standard deviation of 0. We considered that it did not provide much additional information and that these data points also represent regular sales, which is observed when reducing to three clusters (these data points are absorbed by the regular sales cluster)
 
-Now, using the "predict" method of the GMM model, we assign each data point in the dataset to a cluster, and we add that label to the original dataframe.
+Since we are using only two variables, it is not necessary to reduce dimensionality, and they could be visualized directly with a scatter plot. However, PCA can help to identify the directions of greatest variance in your data. This can be useful for understanding the relationship between the two variables and how they contribute to the formation of the clusters.
 """
 
-labels = gmm.predict(X_scaled)
+def apply_pca(X_scaled, n_components=2):
+  # Applies PCA to reduce dimensionality.
+  pca = PCA(n_components=n_components)
+  X_pca = pca.fit_transform(X_scaled)
+  return X_pca
 
-df['cluster'] = labels
+def analyze_clusters(df, gmm, X_scaled):
+  # Calculates cluster statistics, applies PCA, and visualizes the clusters.
+  labels = gmm.predict(X_scaled)  # Assign each data point to a cluster
+  df['cluster'] = labels  # Add label to the original dataframe
 
-"""The data is now clustered; it remains to analyze the results. To do this, we will calculate descriptive statistics for each cluster and visualize the clusters in a graph"""
+  # Calculate cluster statistics
+  cluster_stats = df.groupby('cluster')[['Quantity', 'UnitPrice']].agg(['mean', 'median', 'std', 'min', 'max'])
+  cluster_sizes = df['cluster'].value_counts()
+  print("Cluster Statistics:")
+  print(cluster_stats)
+  print("\nCluster Sizes:")
+  print(cluster_sizes)
 
-# Calculate and print the descriptive statistics of each variable for each cluster
-cluster_stats = df.groupby('cluster')[['Quantity', 'UnitPrice']].agg(['mean', 'median', 'std', 'min', 'max'])
-print(cluster_stats)
+  # Visualize clusters without PCA
+  visualize_clusters(X_scaled, df['cluster'])
 
-# Calculate the size of each cluster
-cluster_sizes = df['cluster'].value_counts()
-print(cluster_sizes)
+  # Apply PCA and visualize
+  X_pca = apply_pca(X_scaled)  # Apply PCA
+  visualize_clusters_pca(X_pca, df['cluster'])  # Visualize using PCA results
 
-"""Since we are using only two variables, it is not necessary to reduce dimensionality, and they could be visualized directly with a scatter plot. However, PCA can help to identify the directions of greatest variance in your data. This can be useful for understanding the relationship between the two variables and how they contribute to the formation of the clusters."""
+def visualize_clusters(X_scaled, cluster_labels):
+  # Visualizes the clusters using two scatter plots: one complete and one zoomed.
+  colors = ['#00008B', '#FF0000', '#008000']
+  cmap = matplotlib.colors.ListedColormap(colors)
 
-# Apply PCA to reduce to 2 dimensions
-pca = PCA(n_components=2)
-X_pca = pca.fit_transform(X_scaled)
+  # Complete plot
+  plt.figure(figsize=(10, 5))
+  plt.subplot(1, 2, 1)  # Create subplot for complete plot
+  plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=cluster_labels, cmap=cmap)
+  plt.xlabel('Principal Component 1')
+  plt.ylabel('Principal Component 2')
+  plt.title('GMM Clusters visualized with PCA (Complete)')
 
-# Visualize the clusters
+  # Zoomed plot
+  plt.subplot(1, 2, 2)  # Create subplot for zoomed plot
+  plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=cluster_labels, cmap=cmap)
+  plt.xlabel('Quantity (scaled)')
+  plt.ylabel('UnitPrice (scaled)')
+  plt.xlim([-0.5, 3.5])
+  plt.ylim([0, 35])
+  plt.title('GMM Clusters (Zoomed)')
 
-# As the colors are not well seen, we modify them
-colors = ['#00008B', '#FF0000', '#008000']  # Azul oscuro, rojo, verde
+def visualize_clusters_pca(X_pca, cluster_labels):
+  # Visualizes the clusters using two scatter plots with PCA results: one complete and one zoomed.
+  colors = ['#00008B', '#FF0000', '#008000']
+  cmap = matplotlib.colors.ListedColormap(colors)
 
-# Create a ListedColormap with the colors
-cmap = matplotlib.colors.ListedColormap(colors)
+  # Complete plot
+  plt.figure(figsize=(10, 5))  # Adjust figure size if needed
+  plt.subplot(1, 2, 1)  # Create subplot for complete plot
+  plt.scatter(X_pca[:, 0], X_pca[:, 1], c=cluster_labels, cmap=cmap) # Now X_pca is defined
+  plt.xlabel('Principal Component 1')
+  plt.ylabel('Principal Component 2')
+  plt.title('GMM Clusters visualized with PCA (Complete)')
 
-plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=df['cluster'], cmap=cmap)
-plt.xlabel('Quantity (escalada)')
-plt.ylabel('UnitPrice (escalada)')
-plt.title('Clusters de GMM')
-plt.show()
+    # Zoomed plot
+  plt.subplot(1, 2, 2)  # Create subplot for zoomed plot
+  plt.scatter(X_pca[:, 0], X_pca[:, 1], c=cluster_labels, cmap=cmap)
+  plt.xlabel('Principal Component 1')
+  plt.ylabel('Principal Component 2')
+  plt.xlim([-5, 5])
+  plt.ylim([0, 20])
+  plt.title('GMM Clusters visualized with PCA (Zoomed)')
 
-"""To see the difference between the clusters a little better, we are going to make another visualization of the area closest to (0,0), so we can visualize cluster 1 more separately"""
+# --- Main script ---
+file_path = 'data_clean.csv'
+df, X_scaled = load_and_preprocess_data(file_path)
+gmm = apply_gmm(X_scaled)
+analyze_clusters(df, gmm, X_scaled)
 
-plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=df['cluster'], cmap=cmap)
-plt.xlabel('Quantity (escalada)')
-plt.ylabel('UnitPrice (escalada)')
-plt.xlim([-0.5, 3.5])
-plt.ylim([0, 35])
-plt.show()
+"""Cluster 0 (dark blue): It is the largest cluster (302619 data points), with a mean quantity of slightly more than 6 units per purchase and a mean unit price of 3.06. We could interpret it as the "Regular low-value purchases" cluster. These are customers who buy moderate quantities of products at relatively low prices.
 
-"""Cluster 0 (red): It is the largest cluster (320445 data points), with a mean quantity of slightly more than 6 units per purchase and a mean unit price of 3.06. We could interpret it as the "Regular low-value purchases" cluster. These are customers who buy moderate quantities of products at relatively low prices.
+Cluster 1 (red): It is a medium-sized cluster (138878 data points) with a mean quantity of 1 unit per purchase, but with a higher mean unit price (6.82) and, above all, very variable (standard deviation of 67.64). In addition, the range of UnitPrice is very wide, with a maximum of 13541.33. It could be the "High-value or special product purchases" cluster, where customers purchase high-priced products or products with a highly variable unit value.
 
-Cluster 1 (dark blue): It is a medium-sized cluster (10254 data points) with a mean quantity of 1 unit per purchase, but with a higher mean unit price (6.82) and, above all, very variable (standard deviation of 67.64). In addition, the range of UnitPrice is very wide, with a maximum of 13541.33. It could be the "High-value or special product purchases" cluster, where customers purchase high-priced products or products with a highly variable unit value.
+Cluster 2 (green): It is the smallest cluster (59487 data points) with a mean quantity of 53 units per purchase and a mean unit price of 1.25. We could interpret it as the "Wholesale purchases" cluster, where customers buy large quantities of products at low prices.
 
-Cluster 2 (green): It is the smallest cluster (62554 data points) with a mean quantity of 53 units per purchase and a mean unit price of 1.25. We could interpret it as the "Wholesale purchases" cluster, where customers buy large quantities of products at low prices.
+--- Alternative data cleaning approach ---
+
+We also considered an alternative data cleaning approach where negative values
+in the 'Quantity' column were kept as returns instead of being removed.
+This approach resulted in slightly different cluster statistics and sizes,
+but the overall cluster structure and interpretation remained largely similar:
+
+Cluster 0 (dark blue): It is the largest cluster (253762 data points), with a mean quantity of 9.85 units per purchase and a mean unit price of 1.90. We could interpret it as the "Regular purchases with some returns" cluster. These are customers who buy moderate quantities of products at low prices and occasionally make returns, as indicated by the negative values in the Quantity range.
+
+Cluster 1 (red): It is the smallest cluster (34416 data points), with a mean quantity of 70.65 units per purchase and a slightly higher mean unit price of 3.15. The presence of large negative values in the Quantity range (-3114) suggests potential large-scale returns, leading us to interpret it as the "Wholesale purchases with potential returns" cluster. These customers likely buy in bulk and may occasionally make significant returns.
+
+Cluster 2 (green): It is a medium-sized cluster (246554 data points), characterized by a mean quantity of 1.49 units per purchase and the highest mean unit price of 4.77. The wide range of UnitPrice, with a maximum of 649.50, indicates high variability in prices. This cluster could be interpreted as the "Individual or high-value purchases" cluster, representing customers who buy few products at a time, but with a higher and more variable unit price, possibly including special or high-value items.
 """
