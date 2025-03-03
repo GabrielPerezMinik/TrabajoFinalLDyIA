@@ -5,7 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
-def optimise_k_means(df,max_k):
+def optimise_k_means(df,max_k) -> None:
     """
     Method used to find a break point on the number of clusters to use
     
