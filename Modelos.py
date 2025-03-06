@@ -307,10 +307,10 @@ while(True):
         arima_train(input_file, split_date)
     elif (option == 3):
         print("Now training Sarimax...")
+        sarimax_train(input_file, split_date)
     elif (option == 4):
         print("Now training XGBoost...")
         xgboost_train(input_file, split_date)
-        sarimax_train(input_file, split_date)
     elif (option == 5):
         print("Exitting...")
         break
