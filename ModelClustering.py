@@ -152,6 +152,7 @@ plt.xlabel("Number of products purchased")
 plt.ylabel("Number of purchases")
 plt.show()
 
+
 # Calculate the Z-score for numeric columns
 z_scores = np.abs(zscore(df_customers[['total_spent', 'Quantity', 'InvoiceNo']]))
 
