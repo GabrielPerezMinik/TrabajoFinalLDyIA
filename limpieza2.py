@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt
 from sklearn.impute import SimpleImputer
 
 
-# import cupy as cp
-
 def print_results(df) -> None:
     """
     Prints basic info on given Dataframe
