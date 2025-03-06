@@ -45,10 +45,13 @@ def kmeans_cluster_by_encoding(df: pd.DataFrame, k: int, additional_info: bool) 
     df = pd.get_dummies(df, columns=categorical_cols, drop_first=True) # one-hot-encoding
 
     label_encoder = LabelEncoder() # label-encoding
-    df['StockCode_encoded'] = label_encoder.fit_transform(df[label_encoding_cols])
+    df['StockCode_encoded'] = label_encoder.fit_transform(df[label_encoding_cols].values.ravel())
     # While one-hot-encoding provides better results in general, we cant use it in rows with multiples values due to size issues. Therefore we use label-encoding
     
     df = df.drop(columns=["InvoiceNo","StockCode","Description","InvoiceDate","CustomerID"]) # Get rid of all the non-relevant columns
+
+    import os
+    os.environ["LOKY_MAX_CPU_COUNT"] = "4"
 
     if (additional_info):
         optimise_k_means(df,10)
@@ -81,7 +84,7 @@ def print_menu() -> None:
     print("2. Exit")
 
 input_file = './data/clean_data.csv'
-df = pd.read_csv(input_file, encoding='iso-8859-1')
+df = pd.read_csv(input_file, encoding='iso-8859-1',low_memory=False)
 df.dropna(inplace=True)
 
 while(True):
@@ -89,11 +92,11 @@ while(True):
     match int(input("User Input: ")):
         case 1:
             k=int(input("Specify of clusters: "))
-            boolean = input("Show aditional info? (Y)Yes (N)No: ") == "Y"
+            boolean = input("Show aditional info? (Y)Yes (N)No: ").strip().lower() == "y"
             print("Now training Kmeans encoding...")
             kmeans_cluster_by_encoding(df,k,boolean)
         case 2:
-            print("Exitting...")
+            print("Exiting...")
             break
         case _:
             print("Unkown input \n")
