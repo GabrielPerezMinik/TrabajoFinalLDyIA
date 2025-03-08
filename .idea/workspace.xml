@@ -5,12 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a9d8571b-bbe8-4434-9b03-e9c25a7bf824" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Limpieza de datos.py" beforeDir="false" afterPath="$PROJECT_DIR$/Data_cleaning_refactor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ModelClustering.py" beforeDir="false" afterPath="$PROJECT_DIR$/ModelClustering.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ModelLinear.py" beforeDir="false" afterPath="$PROJECT_DIR$/ModelLinear.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/limpieza2.py" beforeDir="false" afterPath="$PROJECT_DIR$/limpieza2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data_cleaning_refactor.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_cleaning_refactor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ModelClustering.py" beforeDir="false" afterPath="$PROJECT_DIR$/cm_dbscan.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ModelLinear.py" beforeDir="false" afterPath="$PROJECT_DIR$/lm_ltsm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PruebaMarc.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,11 +38,13 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.Limpieza de datos.executor": "Run",
+    "Python.Main.executor": "Run",
     "Python.ModelClustering.executor": "Run",
     "Python.Modelos.executor": "Run",
     "Python.PruebaMarc.executor": "Run",
     "Python.ejemplo.executor": "Run",
     "Python.limpieza2.executor": "Run",
+    "Python.main.executor": "Run",
     "Python.prueba.executor": "Run",
     "Python.prueba2cluster.executor": "Run",
     "Python.prueba3cluster.executor": "Run",
@@ -65,8 +67,8 @@
       <recent name="C:\Users\gapa1\PycharmProjects\TrabajoFinalLDyIA\models" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.ultimoyamimir">
-    <configuration name="ModelClustering" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.main">
+    <configuration name="cm_dbscan" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="TrabajoFinalLDyIA" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -79,7 +81,29 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ModelClustering.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\gapa1\PycharmProjects\TrabajoFinalLDyIA\cm_dbscan.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="TrabajoFinalLDyIA" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -156,8 +180,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.ultimoyamimir" />
-        <item itemvalue="Python.ModelClustering" />
+        <item itemvalue="Python.cm_dbscan" />
         <item itemvalue="Python.prueba2cluster" />
         <item itemvalue="Python.ultimo" />
       </list>
