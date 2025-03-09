@@ -10,104 +10,105 @@ from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import DataLoader, TensorDataset
 
 
-# =============================================================================
-# Data Loading and Preprocessing
-# =============================================================================
-def load_and_preprocess_data(csv_path):
-    """
-    Loads the CSV file, converts 'InvoiceDate' to date format,
-    sets it as index, and calculates profit.
+class Lltsm:
+    # =============================================================================
+    # Data Loading and Preprocessing
+    # =============================================================================
+    def load_and_preprocess_data(csv_path):
+        """
+        Loads the CSV file, converts 'InvoiceDate' to date format,
+        sets it as index, and calculates profit.
 
-    :param csv_path: Path to the CSV file.
-    :return: Preprocessed DataFrame.
-    """
-    df = pd.read_csv(csv_path, encoding="latin-1", low_memory=False)
-    # Convert 'InvoiceDate' to date and set as index
-    df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate']).dt.date
-    df.set_index('InvoiceDate', inplace=True)
-    # Calculate profit
-    df['profit'] = df['UnitPrice'] * df['Quantity']
-    return df
-
-
-def split_train_test(df):
-    """
-    Splits the DataFrame into training and testing sets based on date ranges.
-
-    :param df: Preprocessed DataFrame.
-    :return: Tuple (train_df, test_df).
-    """
-    train_df = df.loc[date(2010, 12, 1):date(2011, 11, 8)].copy()
-    test_df = df.loc[date(2011, 11, 9):date(2011, 12, 9)].copy()
-    return train_df, test_df
+        :param csv_path: Path to the CSV file.
+        :return: Preprocessed DataFrame.
+        """
+        df = pd.read_csv(csv_path, encoding="latin-1", low_memory=False)
+        # Convert 'InvoiceDate' to date and set as index
+        df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate']).dt.date
+        df.set_index('InvoiceDate', inplace=True)
+        # Calculate profit
+        df['profit'] = df['UnitPrice'] * df['Quantity']
+        return df
 
 
-def add_total_sales(df):
-    """
-    Adds a 'total_sales' column computed as Quantity * UnitPrice.
+    def split_train_test(df):
+        """
+        Splits the DataFrame into training and testing sets based on date ranges.
 
-    :param df: DataFrame.
-    :return: DataFrame with 'total_sales' column.
-    """
-    df.loc[:, 'total_sales'] = df['Quantity'] * df['UnitPrice']
-    return df
-
-
-# =============================================================================
-# Sequence Creation
-# =============================================================================
-def create_sequences(data, seq_length):
-    """
-    Creates sequences from the data where each sequence of length `seq_length`
-    is used to predict the following value.
-
-    :param data: Numpy array of scaled data.
-    :param seq_length: Length of each sequence.
-    :return: Tuple of numpy arrays (sequences, targets).
-    """
-    sequences, targets = [], []
-    for i in range(len(data) - seq_length):
-        sequences.append(data[i:i + seq_length])
-        targets.append(data[i + seq_length])
-    return np.array(sequences), np.array(targets)
+        :param df: Preprocessed DataFrame.
+        :return: Tuple (train_df, test_df).
+        """
+        train_df = df.loc[date(2010, 12, 1):date(2011, 11, 8)].copy()
+        test_df = df.loc[date(2011, 11, 9):date(2011, 12, 9)].copy()
+        return train_df, test_df
 
 
-# =============================================================================
-# Define LSTM Model
-# =============================================================================
-class LSTMModel(nn.Module):
-    """
-    LSTM model for time series prediction.
-    The model consists of an LSTM layer followed by a fully connected layer.
-    """
+    def add_total_sales(df):
+        """
+        Adds a 'total_sales' column computed as Quantity * UnitPrice.
 
-    def __init__(self, input_size=1, hidden_size=50, num_layers=2):
-        super(LSTMModel, self).__init__()
-        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_size, 1)
+        :param df: DataFrame.
+        :return: DataFrame with 'total_sales' column.
+        """
+        df.loc[:, 'total_sales'] = df['Quantity'] * df['UnitPrice']
+        return df
 
-    def forward(self, x):
-        lstm_out, _ = self.lstm(x)
-        # Return the output from the last time step
-        return self.fc(lstm_out[:, -1, :])
+
+    # =============================================================================
+    # Sequence Creation
+    # =============================================================================
+    def create_sequences(data, seq_length):
+        """
+        Creates sequences from the data where each sequence of length `seq_length`
+        is used to predict the following value.
+
+        :param data: Numpy array of scaled data.
+        :param seq_length: Length of each sequence.
+        :return: Tuple of numpy arrays (sequences, targets).
+        """
+        sequences, targets = [], []
+        for i in range(len(data) - seq_length):
+            sequences.append(data[i:i + seq_length])
+            targets.append(data[i + seq_length])
+        return np.array(sequences), np.array(targets)
+
+
+    # =============================================================================
+    # Define LSTM Model
+    # =============================================================================
+    class LSTMModel(nn.Module):
+        """
+        LSTM model for time series prediction.
+        The model consists of an LSTM layer followed by a fully connected layer.
+        """
+
+        def __init__(self, input_size=1, hidden_size=50, num_layers=2):
+            super(Lltsm.LSTMModel, self).__init__()
+            self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
+            self.fc = nn.Linear(hidden_size, 1)
+
+        def forward(self, x):
+            lstm_out, _ = self.lstm(x)
+            # Return the output from the last time step
+            return self.fc(lstm_out[:, -1, :])
 
 
 # =============================================================================
 # Main Function
 # =============================================================================
-def main():
+def run():
     # File path to CSV
     csv_path = "data/clean_data.csv"
 
     # Load and preprocess the data
-    df = load_and_preprocess_data(csv_path)
+    df = Lltsm.load_and_preprocess_data(csv_path)
 
     # Split data into train and test sets
-    train_df, test_df = split_train_test(df)
+    train_df, test_df = Lltsm.split_train_test(df)
 
     # Add 'total_sales' column to both sets
-    train_df = add_total_sales(train_df)
-    test_df = add_total_sales(test_df)
+    train_df = Lltsm.add_total_sales(train_df)
+    test_df = Lltsm.add_total_sales(test_df)
 
     # Scale the 'total_sales' column using MinMaxScaler
     scaler = MinMaxScaler()
@@ -119,8 +120,8 @@ def main():
 
     # Create sequences with 30 days of history for prediction
     seq_length = 30
-    X_train, y_train = create_sequences(train_scaled, seq_length)
-    X_test, y_test = create_sequences(test_scaled, seq_length)
+    X_train, y_train = Lltsm.create_sequences(train_scaled, seq_length)
+    X_test, y_test = Lltsm.create_sequences(test_scaled, seq_length)
 
     # Convert numpy arrays to PyTorch tensors
     X_train_tensor = torch.tensor(X_train, dtype=torch.float32)
@@ -136,7 +137,7 @@ def main():
     # Initialize the LSTM model and send to device (GPU if available)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
-    model = LSTMModel().to(device)
+    model = Lltsm.LSTMModel().to(device)
 
     # Define loss function and optimizer
     criterion = nn.MSELoss()
@@ -231,10 +232,3 @@ def main():
 
     plt.tight_layout()
     plt.show()
-
-
-# =============================================================================
-# Main execution block
-# =============================================================================
-if __name__ == "__main__":
-    main()

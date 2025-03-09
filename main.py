@@ -1,5 +1,6 @@
 import sys
 import cm_dbscan as cdbscan
+import lm_ltsm as llstm
 
 ###############
 # PLACEHOLDER #
@@ -8,10 +9,6 @@ import cm_dbscan as cdbscan
 def run_arimax():
     print("Running ARIMAX model...")
     # Call ARIMAX function here
-
-def run_lstm():
-    print("Running LSTM model...")
-    # Call LSTM function here
 
 def run_random_forest():
     print("Running Random Forest Regression model...")
@@ -70,7 +67,7 @@ def main():
                             case "1":
                                 run_arimax()
                             case "2":
-                                run_lstm()
+                                llstm.run()
                             case "3":
                                 run_random_forest()
                             case "4":
