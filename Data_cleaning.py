@@ -22,13 +22,14 @@ class data_Clean:
         negatives_values = df[(df['Quantity'] < 0) | (df['UnitPrice'] < 0)]
         print(f"\nTotal number of negatives: {negatives_values.__len__()} rows")
 
-    def outliers_by_quartiles(df) -> pd.DataFrame:
+    def outliers_by_quartiles(df,numeric_cols) -> pd.DataFrame:
         """
         Calculate Outliers on given dataframe by quartiles
 
         Parameters
         ----------
             df (pd.Dataframe): Dataframe to clean.
+            numeric_cols (arraylike): all the numeric columns to be used
 
         Returns:
             dataframe (pd.Dataframe): Dataframe without outliers.
@@ -42,7 +43,7 @@ class data_Clean:
             df = df[(df[col] >= lower_bound) & (df[col] <= upper_bound)]
             return df
 
-    def outliers_by_threshold(threshold,df) -> pd.DataFrame:
+    def outliers_by_threshold(threshold,df,numeric_cols) -> pd.DataFrame:
         """
         Calculate Outliers on given dataframe by given threshold
 
@@ -50,6 +51,7 @@ class data_Clean:
         ----------
             threshold (int): threshold to determinate outliers
             df (pd.Dataframe): Dataframe to clean.
+            numeric_cols (arraylike): all the numeric columns to be used
         Returns:
              dataframe (pd.Dataframe): Dataframe without outliers.
         """
@@ -74,7 +76,7 @@ def run():
     new_df = new_df[(new_df['Quantity'] >= 0) & (new_df['UnitPrice'] >= 0)] # Parse null values
     data_Clean.print_results(df)
 
-    new_df = data_Clean.outliers_by_threshold(20,new_df)
+    new_df = data_Clean.outliers_by_threshold(20,new_df,numeric_cols)
 
     data_Clean.print_results(new_df)
     new_df.to_csv(output_file, index=False) # Save parsed file

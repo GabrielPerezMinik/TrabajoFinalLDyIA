@@ -5,10 +5,6 @@ import lm_arimax_prophet as arimax_prophet
 import cm_k_means as ckmeans
 import Data_cleaning as dc
 
-###############
-# PLACEHOLDER #
-###############
-
 def run_random_forest():
     print("Running Random Forest Regression model...")
     # Call Random Forest function here
