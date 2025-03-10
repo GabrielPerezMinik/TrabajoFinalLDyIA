@@ -1,14 +1,13 @@
 import sys
 import cm_dbscan as cdbscan
 import lm_ltsm as llstm
+import lm_arimax_prophet as arimax_prophet
+import cm_k_means as ckmeans
+import Data_cleaning as dc
 
 ###############
 # PLACEHOLDER #
 ###############
-
-def run_arimax():
-    print("Running ARIMAX model...")
-    # Call ARIMAX function here
 
 def run_random_forest():
     print("Running Random Forest Regression model...")
@@ -37,7 +36,7 @@ def main():
         match clean_data:
             case "y":
                 print("Executing data cleaning...")
-                # Call data cleaning function here
+                dc.run()
             case "n":
                 print("Skipping data cleaning...")
             case _:
@@ -55,7 +54,7 @@ def main():
                 case "1":
                     while True:
                         print("\nSelect a linear model:")
-                        print("1. ARIMAX")
+                        print("1. ARIMAX & Prophet")
                         print("2. LSTM")
                         print("3. Random Forest Regression")
                         print("4. Linear Regression")
@@ -65,7 +64,7 @@ def main():
 
                         match linear_choice:
                             case "1":
-                                run_arimax()
+                                arimax_prophet.run()
                             case "2":
                                 llstm.run()
                             case "3":
@@ -90,7 +89,7 @@ def main():
 
                         match cluster_choice:
                             case "1":
-                                run_kmeans()
+                                ckmeans.run()
                             case "2":
                                 run_gmm()
                             case "3":

@@ -6,9 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="a9d8571b-bbe8-4434-9b03-e9c25a7bf824" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lm_ltsm.py" beforeDir="false" afterPath="$PROJECT_DIR$/lm_ltsm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data_cleaning.py" beforeDir="false" afterPath="$PROJECT_DIR$/Data_cleaning.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/lstm_sales_model.pth" beforeDir="false" afterPath="$PROJECT_DIR$/models/lstm_sales_model.pth" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,31 +32,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.Limpieza de datos.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.ModelClustering.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Modelos.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PruebaMarc.executor&quot;: &quot;Run&quot;,
-    &quot;Python.ejemplo.executor&quot;: &quot;Run&quot;,
-    &quot;Python.limpieza2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.prueba.executor&quot;: &quot;Run&quot;,
-    &quot;Python.prueba2cluster.executor&quot;: &quot;Run&quot;,
-    &quot;Python.prueba3cluster.executor&quot;: &quot;Run&quot;,
-    &quot;Python.pruebaCluster.executor&quot;: &quot;Run&quot;,
-    &quot;Python.prureba.executor&quot;: &quot;Run&quot;,
-    &quot;Python.restos.executor&quot;: &quot;Run&quot;,
-    &quot;Python.ultimo.executor&quot;: &quot;Run&quot;,
-    &quot;Python.ultimoyamimir.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Gabriel&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/gapa1/PycharmProjects/TrabajoFinalLDyIA&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.Limpieza de datos.executor": "Run",
+    "Python.Main.executor": "Run",
+    "Python.ModelClustering.executor": "Run",
+    "Python.Modelos.executor": "Run",
+    "Python.PruebaMarc.executor": "Run",
+    "Python.ejemplo.executor": "Run",
+    "Python.limpieza2.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.prueba.executor": "Run",
+    "Python.prueba2cluster.executor": "Run",
+    "Python.prueba3cluster.executor": "Run",
+    "Python.pruebaCluster.executor": "Run",
+    "Python.prureba.executor": "Run",
+    "Python.restos.executor": "Run",
+    "Python.ultimo.executor": "Run",
+    "Python.ultimoyamimir.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/gapa1/PycharmProjects/TrabajoFinalLDyIA"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\gapa1\PycharmProjects\TrabajoFinalLDyIA\ClusterData" />
@@ -189,7 +188,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-fc1d50d2d915-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.24978.54" />
+        <option value="bundled-python-sdk-14705d77f0bb-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.25659.43" />
       </set>
     </attachedChunks>
   </component>
