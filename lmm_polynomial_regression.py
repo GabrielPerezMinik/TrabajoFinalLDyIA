@@ -204,7 +204,6 @@ def create_comparison_graphs(best_poly_model, test_data):
     # Scatter plot of errors
     plt.figure(figsize=(12, 6))
     plt.scatter(y_test, errors_poly, alpha=0.6, label='Errors Polynomial Regression', color='green')
-    plt.axhline(0, color='red', linestyle='--', label='Ideal Line (Error = 0)')
     plt.title('Prediction Errors Compared to Actual Values', fontsize=16)
     plt.xlabel('Actual Values', fontsize=14)
     plt.ylabel('Error', fontsize=14)
