@@ -11,7 +11,7 @@ from sklearn.metrics import silhouette_samples
 import numpy as np
 from scipy.stats import zscore
 
-df = pd.read_csv("TrabajoFinalLDyIA/data/clean_data.csv")
+df = pd.read_csv("data/clean_data.csv")
 df
 
 # Take a random sample of the data, for example, 10%
@@ -121,10 +121,6 @@ plt.xlabel("PCA Component 1")
 plt.ylabel("PCA Component 2")
 plt.show()
 
-# Dimensionality reduction to 2 dimensions (PCA)
-pca = PCA(n_components=2)
-pca_components = pca.fit_transform(df_customers[['total_spent', 'InvoiceNo', 'Quantity']])
-
 # Cluster plot with PCA
 plt.figure(figsize=(10, 8))
 plt.scatter(pca_components[:, 0], pca_components[:, 1], c=clusters, cmap='prism', s=50)
@@ -136,6 +132,8 @@ plt.show()
 # Plot Quantity and total_spent
 plt.figure(figsize=(10, 8))
 plt.scatter(df_customers["Quantity"], df_customers["total_spent"], c=clusters, cmap="prism")
+plt.xlabel("Quantity")
+plt.ylabel("total_spent")
 plt.show()
 
 # Plot total_spent and InvoiceNo
